@@ -1,18 +1,34 @@
 package postgres
 
 import (
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
+	"context"
+	"fmt"
+	"github.com/barisaydogdu/jwt-auth/config"
+	"github.com/jackc/pgx/v5"
 	"os"
 )
 
-var DB *gorm.DB
+type Postgres struct {
+	Ctx    context.Context
+	Config config.EnvDBConfig
+}
 
-func ConnectDB() {
-	dbUrl := os.Getenv("DB_URL")
-	_, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{})
+func NewPostgres(ctx context.Context, config *config.EnvDBConfig) (*Postgres, error) {
+	return &Postgres{
+		Ctx:    ctx,
+		Config: *config,
+	}, nil
+}
+
+func (p *Postgres) ConnectDB() error {
+	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", p.Config.User, p.Config.Password, p.Config.Host, p.Config.Port, p.Config.DBName)
+	conn, err := pgx.Connect(p.Ctx, connString)
 	if err != nil {
-		log.Fatal("Failed to connect to database")
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
+	fmt.Println("Successfully connected to database")
+	defer conn.Close(context.Background())
+
+	return nil
 }
