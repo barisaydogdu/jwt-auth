@@ -11,6 +11,7 @@ import (
 type Postgres struct {
 	Ctx    context.Context
 	Config config.EnvDBConfig
+	Conn   *pgx.Conn
 }
 
 func NewPostgres(ctx context.Context, config *config.EnvDBConfig) (*Postgres, error) {
@@ -27,8 +28,8 @@ func (p *Postgres) ConnectDB() error {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("Successfully connected to database")
-	defer conn.Close(context.Background())
+	p.Conn = conn
 
+	fmt.Println("Successfully connected to database")
 	return nil
 }
