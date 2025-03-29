@@ -6,7 +6,6 @@ import (
 	"github.com/barisaydogdu/jwt-auth/domain"
 	"github.com/barisaydogdu/jwt-auth/infrastructure/postgres"
 	repo "github.com/barisaydogdu/jwt-auth/repository"
-	"github.com/barisaydogdu/jwt-auth/utils"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,6 @@ import (
 var db *pgx.Conn
 var ctx context.Context
 var userRepo repo.UserRepository
-var util utils.Utils
 
 func TestMain(m *testing.M) {
 	Setup(m)
@@ -52,8 +50,6 @@ func Setup(m *testing.M) {
 
 	userRepo = repo.NewUserRepository(ctx, db)
 
-	util = utils.NewUtils(ctx, db)
-
 	m.Run()
 }
 
@@ -67,7 +63,7 @@ func TestLogin(t *testing.T) {
 	user.Password = "123456"
 	user.Role = "user"
 
-	service := NewUserService(userRepo, util, db)
+	service := NewUserService(ctx, userRepo)
 
 	registerToken, err := service.Register(user.FirstName, user.LastName, user.Username, user.Email, user.Password)
 	if err != nil {
@@ -85,7 +81,7 @@ func TestLogin(t *testing.T) {
 
 	assert.Equal(t, registerToken, loginToken)
 
-	util.Cleanup()
+	Cleanup()
 }
 
 func TestRegister(t *testing.T) {
@@ -98,7 +94,7 @@ func TestRegister(t *testing.T) {
 	user.Password = "1234567"
 	user.Role = "user"
 
-	service := NewUserService(userRepo, util, db)
+	service := NewUserService(ctx, userRepo)
 
 	registerToken, err := service.Register(user.FirstName, user.LastName, user.Username, user.Email, user.Password)
 	if err != nil {
@@ -107,5 +103,11 @@ func TestRegister(t *testing.T) {
 
 	assert.NotNil(t, registerToken)
 
-	util.Cleanup()
+}
+
+func Cleanup() {
+	_, err := db.Exec(ctx, "DELETE FROM users")
+	if err != nil {
+		log.Fatal(err)
+	}
 }

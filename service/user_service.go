@@ -16,17 +16,14 @@ type UserService interface {
 }
 
 type userService struct {
-	ctx   context.Context
-	repo  repository.UserRepository
-	utils utils.Utils
-	db    *pgx.Conn
+	ctx  context.Context
+	repo repository.UserRepository
+	db   *pgx.Conn
 }
 
-func NewUserService(repo repository.UserRepository, utils2 utils.Utils, db *pgx.Conn) UserService {
+func NewUserService(ctx context.Context, repo repository.UserRepository) UserService {
 	return &userService{repo: repo,
-		utils: utils2,
-		db:    db,
-	}
+		ctx: ctx}
 }
 
 func (u *userService) Login(email, password string) (string, error) {
@@ -39,9 +36,8 @@ func (u *userService) Login(email, password string) (string, error) {
 	if err != nil {
 		return "", errors.New("invalid password")
 	}
-	util := utils.NewUtils(u.ctx, u.db)
 
-	token, err := util.CreateToken(email)
+	token, err := utils.CreateToken(email)
 	if err != nil {
 		return "", errors.New("error creating token")
 	}
@@ -73,9 +69,7 @@ func (u *userService) Register(firstname, lastname, username, email, password st
 		return "", err
 	}
 
-	util := utils.NewUtils(u.ctx, u.db)
-
-	token, err := util.CreateToken(email)
+	token, err := utils.CreateToken(email)
 	if err != nil {
 		return "", err
 	}
