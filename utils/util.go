@@ -13,7 +13,7 @@ func CreateToken(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"email": email,
-			"exp":   time.Now().Add(time.Minute * 15).Unix(),
+			"exp":   time.Now().UTC().Add(time.Minute * 10).Unix(),
 		})
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
