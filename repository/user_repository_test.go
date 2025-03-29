@@ -44,6 +44,7 @@ func Setup(m *testing.M) {
 		panic(err)
 	}
 	db = pg.Conn
+
 	m.Run()
 
 }
@@ -100,5 +101,4 @@ func Cleanup() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
