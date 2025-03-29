@@ -44,6 +44,7 @@ func Setup(m *testing.M) {
 		panic(err)
 	}
 	db = pg.Conn
+
 	m.Run()
 
 }
