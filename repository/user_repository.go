@@ -27,7 +27,7 @@ func (r *userRepository) FindByEmail(email string) (*domain.User, error) {
 
 	query := `
 		SELECT id, firstname, lastname, username, email, password, role, created_at, updated_at 
-		FROM users 
+		FROM jwt_users_v2 
 		WHERE email = $1
 	`
 
@@ -54,7 +54,7 @@ func (r *userRepository) FindByEmail(email string) (*domain.User, error) {
 }
 
 func (r *userRepository) Create(user *domain.User) error {
-	query := `INSERT INTO users (firstname, lastname, username, email, password, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	query := `INSERT INTO jwt_users_v2 (firstname, lastname, username, email, password, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 
 	if err := r.DB.QueryRow(r.ctx, query, user.FirstName, user.LastName, user.Username, user.Email, user.Password, user.Role).Scan(&user.ID); err != nil {
 		return fmt.Errorf("error while creating user: %w", err)
