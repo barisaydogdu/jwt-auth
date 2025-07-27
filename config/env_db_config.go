@@ -8,6 +8,7 @@ type EnvDBConfig struct {
 	User     string
 	Password string
 	DBName   string
+	HttpPort string
 }
 
 func NewEnvDBConfig() (*EnvDBConfig, error) {
@@ -17,6 +18,7 @@ func NewEnvDBConfig() (*EnvDBConfig, error) {
 		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PASSWORD"),
 		DBName:   os.Getenv("DB_NAME"),
+		HttpPort: os.Getenv("HTTP_PORT"),
 	}, nil
 }
 

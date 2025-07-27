@@ -24,7 +24,7 @@ func Setup(m *testing.M) {
 
 	ctx = context.Background()
 
-	err = godotenv.Load("../env/.env")
+	err = godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -97,7 +97,7 @@ func TestFindUser(t *testing.T) {
 }
 
 func Cleanup() {
-	_, err := db.Exec(ctx, "DELETE FROM users")
+	_, err := db.Exec(ctx, "DELETE FROM jwt_users_v2")
 	if err != nil {
 		log.Fatal(err)
 	}
